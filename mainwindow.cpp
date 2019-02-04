@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include <qstring.h>
 int window_width = 850;
 int window_height = 500;
 int square_width = window_width / 4;
@@ -68,11 +69,13 @@ void MainWindow::draw_map(){
     QColor wall_color(0,0,0);
     QColor goal_color(255,215,0);
     QColor pit_color(255,0,0);
+    QColor text_color(0,0,0);
 
     QPen grid_pen(grid_color);
     QPen wall_pen(wall_color);
     QPen goal_pen(goal_color);
     QPen pit_pen(pit_color);
+    QPen text_pen(text_color);
     grid_pen.setWidth(4);
     state_action[0][0].left = 0.8;
     state_action[0][0].up = 0.6;
@@ -112,14 +115,13 @@ void MainWindow::draw_map(){
                 left.lineTo(start_x,start_y);
                 p.setOpacity(state_action[col][row].left);
                 p.fillPath(left,path_color);
-//                const QString v = "value";
-//                qreal x = start_x + 100;
-//                qreal y = start_y + 100;
-//                const QFont f;
-//                left.addText(x,y,f,v);
                 p.drawPath(left);
+                p.setOpacity(1.0);
+                p.setPen(text_pen);
+                QString left_value = QString::number(state_action[col][row].left);
+                p.drawText(start_x+20,start_y + square_height/2,left_value);
 
-
+                p.setPen(path_pen);
                 QPainterPath up;
                 up.moveTo(start_x,start_y);
                 up.lineTo(start_x+square_width/2,start_y+square_height/2);
@@ -128,7 +130,12 @@ void MainWindow::draw_map(){
                 p.setOpacity(state_action[col][row].up);
                 p.fillPath(up,path_color);
                 p.drawPath(up);
+                p.setOpacity(1.0);
+                p.setPen(text_pen);
+                QString up_value = QString::number(state_action[col][row].up);
+                p.drawText(start_x+(square_width/2) - 10,start_y+20,up_value);
 
+                p.setPen(path_pen);
                 QPainterPath right;
                 right.moveTo(start_x + square_width,start_y);
                 right.lineTo(start_x+square_width/2,start_y+square_height/2);
@@ -137,7 +144,13 @@ void MainWindow::draw_map(){
                 p.setOpacity(state_action[col][row].right);
                 p.fillPath(right,path_color);
                 p.drawPath(right);
+                p.setOpacity(1.0);
+                p.setPen(text_pen);
+                QString right_value = QString::number(state_action[col][row].right);
+                p.drawText(start_x+square_width - 30,start_y+square_height/2,right_value);
 
+
+                p.setPen(path_pen);
                 QPainterPath down;
                 down.moveTo(start_x+square_width/2,start_y+square_height/2);
                 down.lineTo(start_x+square_width,start_y+square_height);
@@ -146,6 +159,11 @@ void MainWindow::draw_map(){
                 p.setOpacity(state_action[col][row].down);
                 p.fillPath(down,path_color);
                 p.drawPath(down);
+                p.setOpacity(1.0);
+                p.setPen(text_pen);
+                QString down_value = QString::number(state_action[col][row].down);
+                p.drawText(start_x+(square_width/2) - 10,start_y+square_height-10,down_value);
+
             }
         }
     }
@@ -156,23 +174,11 @@ void MainWindow::draw_map(){
 
 }
 
-
-//QPainterPath path;
-//      // Set pen to this point.
-//      path.moveTo (startPointX1, startPointY1);
-//      // Draw line from pen point to this point.
-//      path.lineTo (endPointX1, endPointY1);
-
-//      path.moveTo (endPointX1, endPointY1);
-//      path.lineTo (endPointX2,   endPointY2);
-
-//      path.moveTo (endPointX2,   endPointY2);
-//      path.lineTo (startPointX1, startPointY1);
-
-//      painter.setPen (Qt :: NoPen);
-//      painter.fillPath (path, QBrush (QColor ("blue")));
-
-
+//                const QString v = "value";
+//                qreal x = start_x + 100;
+//                qreal y = start_y + 100;
+//                const QFont f;
+//                left.addText(x,y,f,v);
 
 
 
