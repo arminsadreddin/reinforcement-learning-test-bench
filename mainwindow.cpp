@@ -7,6 +7,8 @@ int square_width = window_width / 4;
 int square_height = window_height / 3;
 int agent_col = 0;
 int agent_row = 2;
+double alpha = 0.7;
+string my_move;
 
 struct action{
     double up;
@@ -30,14 +32,12 @@ MainWindow::~MainWindow()
 }
 void MainWindow::paintEvent(QPaintEvent *e){
 
+    unsigned int microsecends = 300000;
+    usleep(microsecends);
     draw_map();
+    agent_move();
 
-//    if(agent_col == 0){
-//        agent_col = 1;
-//    }
-//    else if(agent_col == 1){
-//        agent_col = 0;
-//    }
+
 
 }
 void QWidget::update(){
@@ -61,8 +61,9 @@ void MainWindow::draw_map(){
     //map draw starts
 
 
-    QColor path_color(0,255,0);
-    QPen path_pen(path_color);
+    QColor path_good_color(0,255,0);
+    QColor path_bad_color(255,0,0);
+    QPen path_pen(path_good_color);
     path_pen.setWidth(4);
 
     QColor grid_color(0,0,255);
@@ -77,10 +78,12 @@ void MainWindow::draw_map(){
     QPen pit_pen(pit_color);
     QPen text_pen(text_color);
     grid_pen.setWidth(4);
-    state_action[0][0].left = 0.8;
-    state_action[0][0].up = 0.6;
-    state_action[0][0].right = 0.4;
-    state_action[0][0].down = 0.2;
+
+
+    //    state_action[0][0].left = -0.8;
+    //    state_action[0][0].up = -0.6;
+    //    state_action[0][0].right = -0.4;
+    //    state_action[0][0].down = -0.2;
 
     for(int row = 0 ; row <= 3 ; row++){
         for(int col = 0 ; col <= 2 ; col++){
@@ -113,13 +116,20 @@ void MainWindow::draw_map(){
                 left.lineTo(start_x+square_width/2,start_y+square_height/2);
                 left.lineTo(start_x,start_y + square_height);
                 left.lineTo(start_x,start_y);
-                p.setOpacity(state_action[col][row].left);
-                p.fillPath(left,path_color);
+                if(state_action[col][row].left >= 0){
+                    p.setOpacity(state_action[col][row].left);
+                    p.fillPath(left,path_good_color);
+                }
+                else{
+                    p.setOpacity(-state_action[col][row].left);
+                    p.fillPath(left,path_bad_color);
+                }
                 p.drawPath(left);
                 p.setOpacity(1.0);
                 p.setPen(text_pen);
                 QString left_value = QString::number(state_action[col][row].left);
                 p.drawText(start_x+20,start_y + square_height/2,left_value);
+
 
                 p.setPen(path_pen);
                 QPainterPath up;
@@ -127,13 +137,20 @@ void MainWindow::draw_map(){
                 up.lineTo(start_x+square_width/2,start_y+square_height/2);
                 up.lineTo(start_x + square_width,start_y);
                 up.lineTo(start_x,start_y);
-                p.setOpacity(state_action[col][row].up);
-                p.fillPath(up,path_color);
+                if(state_action[col][row].up >= 0){
+                    p.setOpacity(state_action[col][row].up);
+                    p.fillPath(up,path_good_color);
+                }
+                else{
+                    p.setOpacity(-state_action[col][row].up);
+                    p.fillPath(up,path_bad_color);
+                }
                 p.drawPath(up);
                 p.setOpacity(1.0);
                 p.setPen(text_pen);
                 QString up_value = QString::number(state_action[col][row].up);
                 p.drawText(start_x+(square_width/2) - 10,start_y+20,up_value);
+
 
                 p.setPen(path_pen);
                 QPainterPath right;
@@ -141,8 +158,16 @@ void MainWindow::draw_map(){
                 right.lineTo(start_x+square_width/2,start_y+square_height/2);
                 right.lineTo(start_x + square_width,start_y + square_height);
                 right.lineTo(start_x + square_width,start_y);
-                p.setOpacity(state_action[col][row].right);
-                p.fillPath(right,path_color);
+                if(state_action[col][row].right >= 0){
+                    p.setOpacity(state_action[col][row].right);
+                    p.fillPath(right,path_good_color);
+                }
+                else{
+                    p.setOpacity(-state_action[col][row].right);
+                    p.fillPath(right,path_bad_color);
+                }
+
+
                 p.drawPath(right);
                 p.setOpacity(1.0);
                 p.setPen(text_pen);
@@ -156,8 +181,15 @@ void MainWindow::draw_map(){
                 down.lineTo(start_x+square_width,start_y+square_height);
                 down.lineTo(start_x,start_y + square_height);
                 down.lineTo(start_x+square_width/2,start_y+square_height/2);
-                p.setOpacity(state_action[col][row].down);
-                p.fillPath(down,path_color);
+                if(state_action[col][row].down >= 0){
+                    p.setOpacity(state_action[col][row].down);
+                    p.fillPath(down,path_good_color);
+                }
+                else{
+                    p.setOpacity(-state_action[col][row].down);
+                    p.fillPath(down,path_bad_color);
+                }
+
                 p.drawPath(down);
                 p.setOpacity(1.0);
                 p.setPen(text_pen);
@@ -173,12 +205,196 @@ void MainWindow::draw_map(){
     ui->map->setPixmap(px);
 
 }
+void MainWindow::agent_move(){
+    double alpha_cmp = rand()%100;
+    alpha_cmp = alpha_cmp/100.0;
+    if(alpha_cmp <= alpha){
+        best_move();
+    }
+    else{
+        rand_move();
+    }
+    double reward = get_cur_state_reward();
 
-//                const QString v = "value";
-//                qreal x = start_x + 100;
-//                qreal y = start_y + 100;
-//                const QFont f;
-//                left.addText(x,y,f,v);
+    if(agent_row == 1 && agent_col == 1){
+
+        if(my_move == "UP"){
+            agent_row++;
+        }
+        if(my_move == "RIGHT"){
+            agent_col--;
+        }
+        if(my_move == "DOWN"){
+            agent_row--;
+        }
+        if(my_move == "LEFT"){
+            agent_col++;
+        }
+        if(reward == 0){
+            reward+= 0.9 * get_state_best_value();
+        }
+        if(my_move == "UP"){
+            state_action[agent_row][agent_col].up = reward;//max(reward,state_action[agent_row+1][agent_col].up);
+        }
+        if(my_move == "RIGHT"){
+            state_action[agent_row][agent_col].right = reward;//max(reward,state_action[agent_row+1][agent_col].right);
+        }
+        if(my_move == "DOWN"){
+            state_action[agent_row][agent_col].down=reward;//max(reward,state_action[agent_row+1][agent_col].down);
+        }
+        if(my_move == "LEFT"){
+            state_action[agent_row][agent_col].left=reward;//max(reward,state_action[agent_row+1][agent_col].left);
+        }
+    }
+    else{
+        if(reward == 0){
+            reward+= 0.9 * get_state_best_value();
+        }
+        if(my_move == "UP"){
+            state_action[agent_row+1][agent_col].up = reward;//max(reward,state_action[agent_row+1][agent_col].up);
+        }
+        if(my_move == "RIGHT"){
+            state_action[agent_row][agent_col-1].right = reward;//max(reward,state_action[agent_row+1][agent_col].right);
+        }
+        if(my_move == "DOWN"){
+            state_action[agent_row-1][agent_col].down=reward;//max(reward,state_action[agent_row+1][agent_col].down);
+        }
+        if(my_move == "LEFT"){
+            state_action[agent_row][agent_col+1].left=reward;//max(reward,state_action[agent_row+1][agent_col].left);
+        }
+    }
+
+    if(agent_col < 0 || agent_col > 3){
+        agent_col = 0;
+        agent_row = 2;
+    }
+    if(agent_row < 0 || agent_row > 2){
+        agent_col = 0;
+        agent_row = 2;
+    }
+    if(agent_row == 0 && agent_col == 3){
+        agent_col = 0;
+        agent_row = 2;
+    }
+    if(agent_row == 1 && agent_col == 3){
+        agent_col = 0;
+        agent_row = 2;
+    }
+
+
+
+
+
+
+
+}
+void MainWindow::rand_move(){
+    int rand_side = rand()%4;
+    if(rand_side == 0){
+        //up
+        my_move = "UP";
+        agent_row--;
+    }
+    if(rand_side == 1){
+        my_move = "RIGHT";
+        agent_col++;
+        //right
+    }
+    if(rand_side == 2){
+        my_move = "DOWN";
+        agent_row++;
+        //down
+    }
+    if(rand_side == 3){
+        my_move = "LEFT";
+        agent_col--;
+        //left
+    }
+}
+void MainWindow::best_move(){
+    double max_value = std::max(state_action[agent_row][agent_col].up , state_action[agent_row][agent_col].right);
+    max_value = std::max(max_value , state_action[agent_row][agent_col].down);
+    max_value = std::max(max_value , state_action[agent_row][agent_col].left);
+
+    vector<int> candidates;
+    candidates.clear();
+    if(max_value == state_action[agent_row][agent_col].up){
+        candidates.push_back(0);
+    }
+    if(max_value == state_action[agent_row][agent_col].right){
+        candidates.push_back(1);
+    }
+    if(max_value == state_action[agent_row][agent_col].down){
+        candidates.push_back(2);
+    }
+    if(max_value == state_action[agent_row][agent_col].left){
+        candidates.push_back(3);
+    }
+
+    int rand_index = rand()%candidates.size();
+    int chosen_move = candidates.at(rand_index);
+    if(chosen_move == 0){
+        //up
+        my_move = "UP";
+        agent_row--;
+    }
+    if(chosen_move == 1){
+        //right
+        my_move = "RIGHT";
+        agent_col++;
+    }
+    if(chosen_move == 2){
+        //down
+        my_move = "DOWN";
+        agent_row++;
+    }
+    if(chosen_move == 3){
+        //left
+        my_move = "LEFT";
+        agent_col--;
+    }
+
+}
+double MainWindow::get_cur_state_reward(){
+    if(agent_row > 2){
+        return -1.0;
+    }
+    if(agent_col > 3){
+        return -1.0;
+    }
+    if(agent_row < 0){
+        return -1.0;
+    }
+    if(agent_col < 0){
+        return -1.0;
+    }
+    if(agent_row == 0 && agent_col == 3){
+        return +1.0;
+    }
+    if(agent_row == 1 && agent_col == 3){
+        return -1.0;
+    }
+    return 0.0;
+}
+double MainWindow::get_state_best_value(){
+    double max_value = std::max(state_action[agent_row][agent_col].up , state_action[agent_row][agent_col].right);
+    max_value = std::max(max_value , state_action[agent_row][agent_col].down);
+    max_value = std::max(max_value , state_action[agent_row][agent_col].left);
+    return max_value;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

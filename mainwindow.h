@@ -9,7 +9,7 @@
 #include <QLabel>
 #include <qpainter.h>
 #include <qpicture.h>
-
+#include <unistd.h>
 using namespace std;
 namespace Ui {
 class MainWindow;
@@ -23,6 +23,14 @@ public:
 
     explicit MainWindow(QWidget *parent = nullptr);
     void draw_map();
+    void agent_move();
+
+    void rand_move();
+    void best_move();
+    double get_cur_state_reward();
+    double get_state_best_value();
+
+
     ~MainWindow();
 
 private:
