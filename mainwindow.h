@@ -21,6 +21,9 @@ class MainWindow : public QMainWindow
 
 public:
 
+    double alpha = 0.7;
+    double m_gamma = 0.9;
+
     explicit MainWindow(QWidget *parent = nullptr);
     void draw_map();
     void agent_move();

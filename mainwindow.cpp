@@ -7,7 +7,7 @@ int square_width = window_width / 4;
 int square_height = window_height / 3;
 int agent_col = 0;
 int agent_row = 2;
-double alpha = 0.7;
+
 string my_move;
 
 struct action{
@@ -234,7 +234,7 @@ void MainWindow::agent_move(){
             agent_col++;
         }
         if(reward == 0){
-            reward+= 0.9 * get_state_best_value();
+            reward+= m_gamma * get_state_best_value();
         }
         if(my_move == "UP"){
             state_action[agent_row][agent_col].up = reward;//max(reward,state_action[agent_row+1][agent_col].up);
@@ -251,7 +251,7 @@ void MainWindow::agent_move(){
     }
     else{
         if(reward == 0){
-            reward+= 0.9 * get_state_best_value();
+            reward+= m_gamma * get_state_best_value();
         }
         if(my_move == "UP"){
             state_action[agent_row+1][agent_col].up = reward;//max(reward,state_action[agent_row+1][agent_col].up);
