@@ -56,7 +56,6 @@ void MainWindow::draw_map(){
 
     QPainter p(&px);
 
-    p.drawPixmap( (agent_col * square_width)+(square_width/2)-15  , (agent_row * square_height)+(square_height/2) - 15,agent);
 
     //map draw starts
 
@@ -199,6 +198,10 @@ void MainWindow::draw_map(){
             }
         }
     }
+
+
+    p.drawPixmap( (agent_col * square_width)+(square_width/2)-15  , (agent_row * square_height)+(square_height/2) - 15,agent);
+
 
     p.end();
 
