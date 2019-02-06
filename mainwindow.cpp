@@ -42,8 +42,8 @@ MainWindow::~MainWindow()
 }
 void MainWindow::paintEvent(QPaintEvent *e){
 
-    //unsigned int microsecends = 300000;
-    //usleep(microsecends);
+//    unsigned int microsecends = 300000;
+//    usleep(microsecends);
 
     draw_map();
     if(cur_mode == start){
@@ -101,7 +101,7 @@ void MainWindow::draw_map(){
         for(int col = 0 ; col <= 2 ; col++){
             p.setOpacity(1.0);
             bool special_obj = false;
-            p.setPen(grid_pen);
+            p.setPen(wall_pen);
             int start_y = col * square_height;
             int start_x = row * square_width;
             QRect square(start_x , start_y , square_width , square_height);
@@ -122,7 +122,7 @@ void MainWindow::draw_map(){
             }
             p.drawRect(square);
             if(!special_obj){
-                p.setPen(path_pen);
+                p.setPen(wall_pen);
                 QPainterPath left;
                 left.moveTo(start_x,start_y);
                 left.lineTo(start_x+square_width/2,start_y+square_height/2);
@@ -143,7 +143,7 @@ void MainWindow::draw_map(){
                 p.drawText(start_x+20,start_y + square_height/2,left_value);
 
 
-                p.setPen(path_pen);
+                p.setPen(wall_pen);
                 QPainterPath up;
                 up.moveTo(start_x,start_y);
                 up.lineTo(start_x+square_width/2,start_y+square_height/2);
@@ -164,7 +164,7 @@ void MainWindow::draw_map(){
                 p.drawText(start_x+(square_width/2) - 10,start_y+20,up_value);
 
 
-                p.setPen(path_pen);
+                p.setPen(wall_pen);
                 QPainterPath right;
                 right.moveTo(start_x + square_width,start_y);
                 right.lineTo(start_x+square_width/2,start_y+square_height/2);
@@ -187,7 +187,7 @@ void MainWindow::draw_map(){
                 p.drawText(start_x+square_width - 30,start_y+square_height/2,right_value);
 
 
-                p.setPen(path_pen);
+                p.setPen(wall_pen);
                 QPainterPath down;
                 down.moveTo(start_x+square_width/2,start_y+square_height/2);
                 down.lineTo(start_x+square_width,start_y+square_height);
@@ -404,7 +404,7 @@ double MainWindow::get_state_best_value(){
 }
 void MainWindow::on_start_b_clicked()
 {
-    cout << "start clicked !"<<endl;
+    //cout << "start clicked !"<<endl;
     cur_mode = start;
 }
 
@@ -440,7 +440,7 @@ void MainWindow::on_change_map_b_clicked()
         m_map[row][col] = " ";
     }
     if(ui->item_b->currentText() == "wall"){
-        cout << "WALL CHANGE REQ"<<endl;
+        //cout << "WALL CHANGE REQ"<<endl;
         m_map[row][col] = "W";
     }
     if(ui->item_b->currentText() == "goal +1"){
@@ -454,15 +454,14 @@ void MainWindow::on_change_map_b_clicked()
 
 }
 
+void MainWindow::on_alpha_t_sliderMoved(int position)
+{
+    //cout << "alpha pos : "<<position;
+    alpha = (double)position/100.0;
+}
 
-
-
-
-
-
-
-
-
-
-
-
+void MainWindow::on_gamma_t_sliderMoved(int position)
+{
+    //cout << "gamma pos : "<<position;
+    m_gamma = (double)position/100.0;
+}
