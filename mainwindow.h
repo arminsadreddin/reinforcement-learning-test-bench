@@ -55,6 +55,7 @@ private slots:
     void on_change_map_b_clicked();
     void on_alpha_t_sliderMoved(int position);
     void on_gamma_t_sliderMoved(int position);
+    void on_step_t_sliderMoved(int position);
 };
 
 

@@ -7,7 +7,7 @@ int square_width = window_width / 4;
 int square_height = window_height / 3;
 int agent_col = 0;
 int agent_row = 2;
-
+double step_value = -0.1;
 string my_move;
 enum mode{
     start,
@@ -45,11 +45,11 @@ void MainWindow::paintEvent(QPaintEvent *e){
 //    unsigned int microsecends = 300000;
 //    usleep(microsecends);
 
+//    ui->selected_act_l->text() = QString::fromStdString(my_move);
     draw_map();
     if(cur_mode == start){
         agent_move();
     }
-
 
 
 }
@@ -105,12 +105,31 @@ void MainWindow::draw_map(){
             int start_y = col * square_height;
             int start_x = row * square_width;
             QRect square(start_x , start_y , square_width , square_height);
-            if(m_map[col][row] == "G1"){
+            if(m_map[col][row] == "G1" || m_map[col][row] == "G2" || m_map[col][row] == "G3"){
+                if(m_map[col][row] == "G1"){
+                    p.setOpacity(0.4);
+                }
+                if(m_map[col][row] == "G2"){
+                    p.setOpacity(0.65);
+                }
+                if(m_map[col][row] == "G3"){
+                    p.setOpacity(1.0);
+                }
+
                 special_obj = true;
                 p.fillRect(square,goal_color);
                 p.setPen(goal_pen);
             }
-            if(m_map[col][row] == "P1"){
+            if(m_map[col][row] == "P1" || m_map[col][row] == "P2" || m_map[col][row] == "P3"){
+                if(m_map[col][row] == "P1"){
+                    p.setOpacity(0.4);
+                }
+                if(m_map[col][row] == "P2"){
+                    p.setOpacity(0.65);
+                }
+                if(m_map[col][row] == "P3"){
+                    p.setOpacity(1.0);
+                }
                 special_obj = true;
                 p.fillRect(square,pit_color);
                 p.setPen(pit_pen);
@@ -120,7 +139,7 @@ void MainWindow::draw_map(){
                 p.fillRect(square,wall_color);
                 p.setPen(wall_pen);
             }
-            p.drawRect(square);
+
             if(!special_obj){
                 p.setPen(wall_pen);
                 QPainterPath left;
@@ -209,6 +228,11 @@ void MainWindow::draw_map(){
                 p.drawText(start_x+(square_width/2) - 10,start_y+square_height-10,down_value);
 
             }
+
+            p.setPen(wall_pen);
+            p.drawRect(square);
+
+
         }
     }
 
@@ -249,6 +273,9 @@ void MainWindow::agent_move(){
         if(reward == 0){
             reward+= m_gamma * get_state_best_value();
         }
+
+        reward+=step_value;
+
         if(my_move == "UP"){
             state_action[agent_row][agent_col].up = reward;//max(reward,state_action[agent_row+1][agent_col].up);
         }
@@ -266,6 +293,7 @@ void MainWindow::agent_move(){
         if(reward == 0){
             reward+= m_gamma * get_state_best_value();
         }
+        reward+=step_value;
         if(my_move == "UP"){
             state_action[agent_row+1][agent_col].up = reward;//max(reward,state_action[agent_row+1][agent_col].up);
         }
@@ -288,15 +316,30 @@ void MainWindow::agent_move(){
         agent_col = 0;
         agent_row = 2;
     }
-    if(agent_row == 0 && agent_col == 3){
+    if(m_map[agent_row][agent_col] == "G1"){
         agent_col = 0;
         agent_row = 2;
     }
-    if(agent_row == 1 && agent_col == 3){
+    if(m_map[agent_row][agent_col] == "G2"){
         agent_col = 0;
         agent_row = 2;
     }
-
+    if(m_map[agent_row][agent_col] == "G3"){
+        agent_col = 0;
+        agent_row = 2;
+    }
+    if(m_map[agent_row][agent_col] == "P1"){
+        agent_col = 0;
+        agent_row = 2;
+    }
+    if(m_map[agent_row][agent_col] == "P2"){
+        agent_col = 0;
+        agent_row = 2;
+    }
+    if(m_map[agent_row][agent_col] == "P3"){
+        agent_col = 0;
+        agent_row = 2;
+    }
 
 
 
@@ -385,14 +428,22 @@ double MainWindow::get_cur_state_reward(){
         return -1.0;
     }
     if(m_map[agent_row][agent_col] == "G1"){
-        //if(agent_row == 0 && agent_col == 3){
         return +1.0;
-        //}
+    }
+    if(m_map[agent_row][agent_col] == "G2"){
+        return +2.0;
+    }
+    if(m_map[agent_row][agent_col] == "G3"){
+        return +3.0;
     }
     if(m_map[agent_row][agent_col] == "P1"){
-        //if(agent_row == 1 && agent_col == 3){
-        return -1.0;
-        //}
+        return -1.0;        
+    }
+    if(m_map[agent_row][agent_col] == "P2"){
+        return -2.0;
+    }
+    if(m_map[agent_row][agent_col] == "P3"){
+        return -3.0;
     }
     return 0.0;
 }
@@ -446,8 +497,20 @@ void MainWindow::on_change_map_b_clicked()
     if(ui->item_b->currentText() == "goal +1"){
         m_map[row][col] = "G1";
     }
+    if(ui->item_b->currentText() == "goal +2"){
+        m_map[row][col] = "G2";
+    }
+    if(ui->item_b->currentText() == "goal +3"){
+        m_map[row][col] = "G3";
+    }
     if(ui->item_b->currentText() == "pit -1"){
         m_map[row][col] = "P1";
+    }
+    if(ui->item_b->currentText() == "pit -2"){
+        m_map[row][col] = "P2";
+    }
+    if(ui->item_b->currentText() == "pit -3"){
+        m_map[row][col] = "P3";
     }
 
     //m_map[row][col]
@@ -464,4 +527,10 @@ void MainWindow::on_gamma_t_sliderMoved(int position)
 {
     //cout << "gamma pos : "<<position;
     m_gamma = (double)position/100.0;
+}
+
+void MainWindow::on_step_t_sliderMoved(int position)
+{
+    double tmp = position/10.0;
+    step_value = tmp - 5.0;
 }
