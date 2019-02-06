@@ -9,6 +9,11 @@ int agent_col = 0;
 int agent_row = 2;
 
 string my_move;
+enum mode{
+    start,
+    stop
+};
+mode cur_mode = stop;
 
 struct action{
     double up;
@@ -18,6 +23,11 @@ struct action{
 };
 
 action state_action[3][4];
+string m_map[3][4] = {
+    {" "," "," ","G1"},
+    {" ","W"," ","P1"},
+    {" "," "," "," "}
+};
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -32,10 +42,13 @@ MainWindow::~MainWindow()
 }
 void MainWindow::paintEvent(QPaintEvent *e){
 
-    unsigned int microsecends = 300000;
-    usleep(microsecends);
+    //unsigned int microsecends = 300000;
+    //usleep(microsecends);
+
     draw_map();
-    agent_move();
+    if(cur_mode == start){
+        agent_move();
+    }
 
 
 
@@ -92,17 +105,17 @@ void MainWindow::draw_map(){
             int start_y = col * square_height;
             int start_x = row * square_width;
             QRect square(start_x , start_y , square_width , square_height);
-            if(row == 3 && col == 0){
+            if(m_map[col][row] == "G1"){
                 special_obj = true;
                 p.fillRect(square,goal_color);
                 p.setPen(goal_pen);
             }
-            if(row == 3 && col == 1){
+            if(m_map[col][row] == "P1"){
                 special_obj = true;
                 p.fillRect(square,pit_color);
                 p.setPen(pit_pen);
             }
-            if(row == 1 && col == 1){
+            if(m_map[col][row] == "W"){
                 special_obj = true;
                 p.fillRect(square,wall_color);
                 p.setPen(wall_pen);
@@ -219,7 +232,7 @@ void MainWindow::agent_move(){
     }
     double reward = get_cur_state_reward();
 
-    if(agent_row == 1 && agent_col == 1){
+    if((agent_col < 4 && agent_col > -1 && agent_row < 3 && agent_row > -1) && m_map[agent_row][agent_col] == "W"){
 
         if(my_move == "UP"){
             agent_row++;
@@ -371,11 +384,15 @@ double MainWindow::get_cur_state_reward(){
     if(agent_col < 0){
         return -1.0;
     }
-    if(agent_row == 0 && agent_col == 3){
+    if(m_map[agent_row][agent_col] == "G1"){
+        //if(agent_row == 0 && agent_col == 3){
         return +1.0;
+        //}
     }
-    if(agent_row == 1 && agent_col == 3){
+    if(m_map[agent_row][agent_col] == "P1"){
+        //if(agent_row == 1 && agent_col == 3){
         return -1.0;
+        //}
     }
     return 0.0;
 }
@@ -385,13 +402,57 @@ double MainWindow::get_state_best_value(){
     max_value = std::max(max_value , state_action[agent_row][agent_col].left);
     return max_value;
 }
+void MainWindow::on_start_b_clicked()
+{
+    cout << "start clicked !"<<endl;
+    cur_mode = start;
+}
 
+void MainWindow::on_stop_b_clicked()
+{
+    cur_mode = stop;
+}
 
+void MainWindow::on_reset_b_clicked()
+{
+    cur_mode = stop;
+    for(int row = 0 ; row < 3 ; row++){
+        for(int col = 0 ; col < 4 ; col++){
+            state_action[row][col].up = 0.0;
+            state_action[row][col].right = 0.0;
+            state_action[row][col].down = 0.0;
+            state_action[row][col].left = 0.0;
+        }
+    }
+    agent_row = 2;
+    agent_col = 0;
+}
 
+void MainWindow::on_change_map_b_clicked()
+{
+    //cout << "map change click"<<endl;
+    QString col_str = ui->x_b->currentText();
+    QString row_str = ui->y_b->currentText();
+    int col = col_str.toInt();
+    int row = row_str.toInt();
+    //cout << ui->item_b->currentText().toStdString() << endl;
+    if(ui->item_b->currentText() == "empty"){
+        m_map[row][col] = " ";
+    }
+    if(ui->item_b->currentText() == "wall"){
+        cout << "WALL CHANGE REQ"<<endl;
+        m_map[row][col] = "W";
+    }
+    if(ui->item_b->currentText() == "goal +1"){
+        m_map[row][col] = "G1";
+    }
+    if(ui->item_b->currentText() == "pit -1"){
+        m_map[row][col] = "P1";
+    }
 
+    //m_map[row][col]
 
-
-
+}
 
 
 

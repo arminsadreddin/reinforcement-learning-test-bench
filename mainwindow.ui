@@ -44,7 +44,7 @@
     <property name="geometry">
      <rect>
       <x>750</x>
-      <y>530</y>
+      <y>540</y>
       <width>89</width>
       <height>25</height>
      </rect>
@@ -57,26 +57,13 @@
     <property name="geometry">
      <rect>
       <x>750</x>
-      <y>590</y>
+      <y>580</y>
       <width>89</width>
       <height>25</height>
      </rect>
     </property>
     <property name="text">
      <string>RESET</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="resume_b">
-    <property name="geometry">
-     <rect>
-      <x>750</x>
-      <y>560</y>
-      <width>89</width>
-      <height>25</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>RESUME</string>
     </property>
    </widget>
    <widget class="QComboBox" name="learning_b">
@@ -343,7 +330,7 @@
      <string>Y:</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="change_map_b">
     <property name="geometry">
      <rect>
       <x>568</x>

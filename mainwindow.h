@@ -17,6 +17,8 @@ class MainWindow;
 
 class MainWindow : public QMainWindow
 {
+
+
     Q_OBJECT
 
 public:
@@ -28,6 +30,7 @@ public:
     void draw_map();
     void agent_move();
 
+
     void rand_move();
     void best_move();
     double get_cur_state_reward();
@@ -36,12 +39,20 @@ public:
 
     ~MainWindow();
 
+
+
+
 private:
     Ui::MainWindow *ui;
 
 protected:
     void paintEvent(QPaintEvent *e);
 
+private slots:
+    void on_start_b_clicked();
+    void on_stop_b_clicked();
+    void on_reset_b_clicked();
+    void on_change_map_b_clicked();
 };
 
 
