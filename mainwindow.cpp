@@ -7,6 +7,7 @@ int square_width = window_width / 4;
 int square_height = window_height / 3;
 int agent_col = 0;
 int agent_row = 2;
+
 double step_value = -0.1;
 string my_move;
 enum mode{
@@ -46,6 +47,10 @@ void MainWindow::paintEvent(QPaintEvent *e){
 //    usleep(microsecends);
 
 //    ui->selected_act_l->text() = QString::fromStdString(my_move);
+    alpha = ui->alpha_le->text().toDouble();
+    m_gamma = ui->gamma_le->text().toDouble();
+    step_value = ui->step_le->text().toDouble();
+
     draw_map();
     if(cur_mode == start){
         agent_move();
@@ -517,20 +522,4 @@ void MainWindow::on_change_map_b_clicked()
 
 }
 
-void MainWindow::on_alpha_t_sliderMoved(int position)
-{
-    //cout << "alpha pos : "<<position;
-    alpha = (double)position/100.0;
-}
 
-void MainWindow::on_gamma_t_sliderMoved(int position)
-{
-    //cout << "gamma pos : "<<position;
-    m_gamma = (double)position/100.0;
-}
-
-void MainWindow::on_step_t_sliderMoved(int position)
-{
-    double tmp = position/10.0;
-    step_value = tmp - 5.0;
-}

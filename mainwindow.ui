@@ -147,19 +147,6 @@
      <string>%</string>
     </property>
    </widget>
-   <widget class="QSlider" name="alpha_t">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>500</y>
-      <width>160</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
    <widget class="QLabel" name="alpha_l">
     <property name="geometry">
      <rect>
@@ -171,19 +158,6 @@
     </property>
     <property name="text">
      <string>ALPHA</string>
-    </property>
-   </widget>
-   <widget class="QSlider" name="gamma_t">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>530</y>
-      <width>160</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
     </property>
    </widget>
    <widget class="QLabel" name="gamma_l">
@@ -356,19 +330,6 @@
      <string>step_value</string>
     </property>
    </widget>
-   <widget class="QSlider" name="step_t">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>560</y>
-      <width>160</width>
-      <height>16</height>
-     </rect>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Horizontal</enum>
-    </property>
-   </widget>
    <widget class="QLabel" name="s_act_l">
     <property name="geometry">
      <rect>
@@ -419,6 +380,45 @@
     </property>
     <property name="text">
      <string/>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="alpha_le">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>500</y>
+      <width>71</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0.7</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="gamma_le">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>530</y>
+      <width>71</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>0.9</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="step_le">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>560</y>
+      <width>71</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>-0.1</string>
     </property>
    </widget>
   </widget>
