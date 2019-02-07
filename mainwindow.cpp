@@ -8,6 +8,10 @@ int square_height = window_height / 3;
 int agent_col = 0;
 int agent_row = 2;
 
+bool isStochastic = false;
+double noise_per = 0;
+double obey_per = 100.0;
+
 double step_value = -0.1;
 string my_move;
 enum mode{
@@ -43,13 +47,8 @@ MainWindow::~MainWindow()
 }
 void MainWindow::paintEvent(QPaintEvent *e){
 
-//    unsigned int microsecends = 300000;
-//    usleep(microsecends);
 
-//    ui->selected_act_l->text() = QString::fromStdString(my_move);
-    alpha = ui->alpha_le->text().toDouble();
-    m_gamma = ui->gamma_le->text().toDouble();
-    step_value = ui->step_le->text().toDouble();
+    get_ui_data();
 
     draw_map();
     if(cur_mode == start){
@@ -261,7 +260,7 @@ void MainWindow::agent_move(){
     }
     double reward = get_cur_state_reward();
 
-    if((agent_col < 4 && agent_col > -1 && agent_row < 3 && agent_row > -1) && m_map[agent_row][agent_col] == "W"){
+    if((agent_col > 3 || agent_col < 0 || agent_row > 2 || agent_row < 0) || m_map[agent_row][agent_col] == "W"){
 
         if(my_move == "UP"){
             agent_row++;
@@ -275,9 +274,12 @@ void MainWindow::agent_move(){
         if(my_move == "LEFT"){
             agent_col++;
         }
-        if(reward == 0){
-            reward+= m_gamma * get_state_best_value();
-        }
+        cout << "col : "<<agent_col<<endl;
+        cout<< "row :"<<agent_row<<endl;
+
+        reward+= m_gamma * get_state_best_value();
+
+
 
         reward+=step_value;
 
@@ -295,9 +297,7 @@ void MainWindow::agent_move(){
         }
     }
     else{
-        if(reward == 0){
-            reward+= m_gamma * get_state_best_value();
-        }
+        reward+= m_gamma * get_state_best_value();
         reward+=step_value;
         if(my_move == "UP"){
             state_action[agent_row+1][agent_col].up = reward;//max(reward,state_action[agent_row+1][agent_col].up);
@@ -421,17 +421,18 @@ void MainWindow::best_move(){
 }
 double MainWindow::get_cur_state_reward(){
     if(agent_row > 2){
-        return -1.0;
+        return 0.0;
     }
     if(agent_col > 3){
-        return -1.0;
+        return 0.0;
     }
     if(agent_row < 0){
-        return -1.0;
+        return 0.0;
     }
     if(agent_col < 0){
-        return -1.0;
+        return 0.0;
     }
+
     if(m_map[agent_row][agent_col] == "G1"){
         return +1.0;
     }
@@ -521,5 +522,28 @@ void MainWindow::on_change_map_b_clicked()
     //m_map[row][col]
 
 }
+void MainWindow::get_ui_data(){
 
 
+    alpha = ui->alpha_le->text().toDouble();
+    m_gamma = ui->gamma_le->text().toDouble();
+    step_value = ui->step_le->text().toDouble();
+
+    ui->s_act_te->setText(QString::fromStdString(my_move));
+    ui->r_act_te->setText(QString::fromStdString(my_move));
+
+    if(isStochastic){
+        noise_per = ui->slip_per->text().toDouble();
+        obey_per = 100.0 - (2 * noise_per);
+    }
+
+
+
+}
+
+
+
+void MainWindow::on_slip_b_clicked()
+{
+    isStochastic = !isStochastic;
+}

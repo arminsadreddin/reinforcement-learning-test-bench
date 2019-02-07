@@ -29,7 +29,7 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     void draw_map();
     void agent_move();
-
+    void get_ui_data();
 
     void rand_move();
     void best_move();
@@ -54,6 +54,7 @@ private slots:
     void on_reset_b_clicked();
     void on_change_map_b_clicked();
 
+    void on_slip_b_clicked();
 };
 
 
