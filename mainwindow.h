@@ -37,6 +37,9 @@ public:
     double get_state_best_value();
 
 
+
+
+
     ~MainWindow();
 
 

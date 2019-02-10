@@ -18,7 +18,13 @@ enum mode{
     start,
     stop
 };
+enum view{
+    value,
+    policy
+};
+
 mode cur_mode = stop;
+view cur_view = policy;
 
 struct action{
     double up;
@@ -103,139 +109,236 @@ void MainWindow::draw_map(){
 
     for(int row = 0 ; row <= 3 ; row++){
         for(int col = 0 ; col <= 2 ; col++){
-            p.setOpacity(1.0);
-            bool special_obj = false;
-            p.setPen(wall_pen);
+
             int start_y = col * square_height;
             int start_x = row * square_width;
-            QRect square(start_x , start_y , square_width , square_height);
-            if(m_map[col][row] == "G1" || m_map[col][row] == "G2" || m_map[col][row] == "G3"){
-                if(m_map[col][row] == "G1"){
-                    p.setOpacity(0.4);
+
+            if(cur_view == value){
+                p.setOpacity(1.0);
+                bool special_obj = false;
+                p.setPen(wall_pen);
+
+                QRect square(start_x , start_y , square_width , square_height);
+                if(m_map[col][row] == "G1" || m_map[col][row] == "G2" || m_map[col][row] == "G3"){
+                    if(m_map[col][row] == "G1"){
+                        p.setOpacity(0.4);
+                    }
+                    if(m_map[col][row] == "G2"){
+                        p.setOpacity(0.65);
+                    }
+                    if(m_map[col][row] == "G3"){
+                        p.setOpacity(1.0);
+                    }
+
+                    special_obj = true;
+                    p.fillRect(square,goal_color);
+                    p.setPen(goal_pen);
                 }
-                if(m_map[col][row] == "G2"){
-                    p.setOpacity(0.65);
+                if(m_map[col][row] == "P1" || m_map[col][row] == "P2" || m_map[col][row] == "P3"){
+                    if(m_map[col][row] == "P1"){
+                        p.setOpacity(0.4);
+                    }
+                    if(m_map[col][row] == "P2"){
+                        p.setOpacity(0.65);
+                    }
+                    if(m_map[col][row] == "P3"){
+                        p.setOpacity(1.0);
+                    }
+                    special_obj = true;
+                    p.fillRect(square,pit_color);
+                    p.setPen(pit_pen);
                 }
-                if(m_map[col][row] == "G3"){
+                if(m_map[col][row] == "W"){
+                    special_obj = true;
+                    p.fillRect(square,wall_color);
+                    p.setPen(wall_pen);
+                }
+
+                if(!special_obj){
+                    p.setPen(wall_pen);
+                    QPainterPath left;
+                    left.moveTo(start_x,start_y);
+                    left.lineTo(start_x+square_width/2,start_y+square_height/2);
+                    left.lineTo(start_x,start_y + square_height);
+                    left.lineTo(start_x,start_y);
+                    if(state_action[col][row].left >= 0){
+                        p.setOpacity(state_action[col][row].left);
+                        p.fillPath(left,path_good_color);
+                    }
+                    else{
+                        p.setOpacity(-state_action[col][row].left);
+                        p.fillPath(left,path_bad_color);
+                    }
+                    p.drawPath(left);
                     p.setOpacity(1.0);
-                }
+                    p.setPen(text_pen);
+                    QString left_value = QString::number(state_action[col][row].left);
+                    p.drawText(start_x+20,start_y + square_height/2,left_value);
 
-                special_obj = true;
-                p.fillRect(square,goal_color);
-                p.setPen(goal_pen);
-            }
-            if(m_map[col][row] == "P1" || m_map[col][row] == "P2" || m_map[col][row] == "P3"){
-                if(m_map[col][row] == "P1"){
-                    p.setOpacity(0.4);
-                }
-                if(m_map[col][row] == "P2"){
-                    p.setOpacity(0.65);
-                }
-                if(m_map[col][row] == "P3"){
+
+                    p.setPen(wall_pen);
+                    QPainterPath up;
+                    up.moveTo(start_x,start_y);
+                    up.lineTo(start_x+square_width/2,start_y+square_height/2);
+                    up.lineTo(start_x + square_width,start_y);
+                    up.lineTo(start_x,start_y);
+                    if(state_action[col][row].up >= 0){
+                        p.setOpacity(state_action[col][row].up);
+                        p.fillPath(up,path_good_color);
+                    }
+                    else{
+                        p.setOpacity(-state_action[col][row].up);
+                        p.fillPath(up,path_bad_color);
+                    }
+                    p.drawPath(up);
                     p.setOpacity(1.0);
+                    p.setPen(text_pen);
+                    QString up_value = QString::number(state_action[col][row].up);
+                    p.drawText(start_x+(square_width/2) - 10,start_y+20,up_value);
+
+
+                    p.setPen(wall_pen);
+                    QPainterPath right;
+                    right.moveTo(start_x + square_width,start_y);
+                    right.lineTo(start_x+square_width/2,start_y+square_height/2);
+                    right.lineTo(start_x + square_width,start_y + square_height);
+                    right.lineTo(start_x + square_width,start_y);
+                    if(state_action[col][row].right >= 0){
+                        p.setOpacity(state_action[col][row].right);
+                        p.fillPath(right,path_good_color);
+                    }
+                    else{
+                        p.setOpacity(-state_action[col][row].right);
+                        p.fillPath(right,path_bad_color);
+                    }
+
+
+                    p.drawPath(right);
+                    p.setOpacity(1.0);
+                    p.setPen(text_pen);
+                    QString right_value = QString::number(state_action[col][row].right);
+                    p.drawText(start_x+square_width - 30,start_y+square_height/2,right_value);
+
+
+                    p.setPen(wall_pen);
+                    QPainterPath down;
+                    down.moveTo(start_x+square_width/2,start_y+square_height/2);
+                    down.lineTo(start_x+square_width,start_y+square_height);
+                    down.lineTo(start_x,start_y + square_height);
+                    down.lineTo(start_x+square_width/2,start_y+square_height/2);
+                    if(state_action[col][row].down >= 0){
+                        p.setOpacity(state_action[col][row].down);
+                        p.fillPath(down,path_good_color);
+                    }
+                    else{
+                        p.setOpacity(-state_action[col][row].down);
+                        p.fillPath(down,path_bad_color);
+                    }
+
+                    p.drawPath(down);
+                    p.setOpacity(1.0);
+                    p.setPen(text_pen);
+                    QString down_value = QString::number(state_action[col][row].down);
+                    p.drawText(start_x+(square_width/2) - 10,start_y+square_height-10,down_value);
+
                 }
-                special_obj = true;
-                p.fillRect(square,pit_color);
-                p.setPen(pit_pen);
+
+                p.setPen(wall_pen);
+                p.drawRect(square);
             }
-            if(m_map[col][row] == "W"){
-                special_obj = true;
-                p.fillRect(square,wall_color);
+            else{
+                int start_y = col * square_height;
+                int start_x = row * square_width;
+                QRect square(start_x , start_y , square_width , square_height);
+
+
+                if(m_map[col][row] == "G1" || m_map[col][row] == "G2" || m_map[col][row] == "G3"){
+                    if(m_map[col][row] == "G1"){
+                        p.setOpacity(0.4);
+                    }
+                    if(m_map[col][row] == "G2"){
+                        p.setOpacity(0.65);
+                    }
+                    if(m_map[col][row] == "G3"){
+                        p.setOpacity(1.0);
+                    }
+                    p.fillRect(square,goal_color);
+                    p.setPen(goal_pen);
+                }
+                else if(m_map[col][row] == "P1" || m_map[col][row] == "P2" || m_map[col][row] == "P3"){
+                    if(m_map[col][row] == "P1"){
+                        p.setOpacity(0.4);
+                    }
+                    if(m_map[col][row] == "P2"){
+                        p.setOpacity(0.65);
+                    }
+                    if(m_map[col][row] == "P3"){
+                        p.setOpacity(1.0);
+                    }
+
+                    p.fillRect(square,pit_color);
+                    p.setPen(pit_pen);
+                }
+                else if(m_map[col][row] == "W"){
+
+                    p.fillRect(square,wall_color);
+                    p.setPen(wall_pen);
+                }
+                else{
+                    double state_max_value = std::max(state_action[col][row].up,state_action[col][row].right);
+                    state_max_value = std::max(state_max_value , state_action[col][row].down);
+                    state_max_value = std::max(state_max_value,state_action[col][row].left);
+
+                    QColor arrow_color(0,0,255);
+                    QPen arrow_pen(arrow_color);
+                    arrow_pen.setWidth(4);
+                    p.setPen(arrow_pen);
+                    p.setOpacity(1.0);
+
+                    if(state_action[col][row].up == state_max_value){
+                        QPainterPath up_arrow;
+                        up_arrow.moveTo(start_x+square_width/2,start_y+square_height-10);
+                        up_arrow.lineTo(start_x+square_width/2,start_y+10);
+                        up_arrow.lineTo(start_x+square_width/2+15,start_y+25);
+                        up_arrow.lineTo(start_x+square_width/2,start_y+10);
+                        up_arrow.lineTo(start_x+square_width/2-15,start_y+25);
+                        p.drawPath(up_arrow);
+                    }
+                    if(state_action[col][row].right == state_max_value){
+                        QPainterPath right_arrow;
+                        right_arrow.moveTo(start_x+20,start_y+square_height/2);
+                        right_arrow.lineTo(start_x+square_width - 20,start_y+square_height/2);
+                        right_arrow.lineTo(start_x+square_width - 40,start_y+square_height/2+15);
+                        right_arrow.lineTo(start_x+square_width - 20,start_y+square_height/2);
+                        right_arrow.lineTo(start_x+square_width - 40,start_y+square_height/2-15);
+                        p.drawPath(right_arrow);
+                    }
+                    if(state_action[col][row].down == state_max_value){
+                        QPainterPath down_arrow;
+                        down_arrow.moveTo(start_x+square_width/2,start_y+10);
+                        down_arrow.lineTo(start_x+square_width/2,start_y+square_height-10);
+                        down_arrow.lineTo(start_x+square_width/2 +15,start_y+square_height-25);
+                        down_arrow.lineTo(start_x+square_width/2,start_y+square_height-10);
+                        down_arrow.lineTo(start_x+square_width/2 -15,start_y+square_height-25);
+                        p.drawPath(down_arrow);
+                    }
+                    if(state_action[col][row].left == state_max_value){
+                        QPainterPath left_arrow;
+                        left_arrow.moveTo(start_x+square_width - 20,start_y+square_height/2);
+                        left_arrow.lineTo(start_x+20,start_y+square_height/2);
+                        left_arrow.lineTo(start_x+40,start_y+square_height/2-15);
+                        left_arrow.lineTo(start_x+20,start_y+square_height/2);
+                        left_arrow.lineTo(start_x+40,start_y+square_height/2+15);
+                        p.drawPath(left_arrow);
+                    }
+
+
+                }
+
+
                 p.setPen(wall_pen);
+                p.drawRect(square);
             }
-
-            if(!special_obj){
-                p.setPen(wall_pen);
-                QPainterPath left;
-                left.moveTo(start_x,start_y);
-                left.lineTo(start_x+square_width/2,start_y+square_height/2);
-                left.lineTo(start_x,start_y + square_height);
-                left.lineTo(start_x,start_y);
-                if(state_action[col][row].left >= 0){
-                    p.setOpacity(state_action[col][row].left);
-                    p.fillPath(left,path_good_color);
-                }
-                else{
-                    p.setOpacity(-state_action[col][row].left);
-                    p.fillPath(left,path_bad_color);
-                }
-                p.drawPath(left);
-                p.setOpacity(1.0);
-                p.setPen(text_pen);
-                QString left_value = QString::number(state_action[col][row].left);
-                p.drawText(start_x+20,start_y + square_height/2,left_value);
-
-
-                p.setPen(wall_pen);
-                QPainterPath up;
-                up.moveTo(start_x,start_y);
-                up.lineTo(start_x+square_width/2,start_y+square_height/2);
-                up.lineTo(start_x + square_width,start_y);
-                up.lineTo(start_x,start_y);
-                if(state_action[col][row].up >= 0){
-                    p.setOpacity(state_action[col][row].up);
-                    p.fillPath(up,path_good_color);
-                }
-                else{
-                    p.setOpacity(-state_action[col][row].up);
-                    p.fillPath(up,path_bad_color);
-                }
-                p.drawPath(up);
-                p.setOpacity(1.0);
-                p.setPen(text_pen);
-                QString up_value = QString::number(state_action[col][row].up);
-                p.drawText(start_x+(square_width/2) - 10,start_y+20,up_value);
-
-
-                p.setPen(wall_pen);
-                QPainterPath right;
-                right.moveTo(start_x + square_width,start_y);
-                right.lineTo(start_x+square_width/2,start_y+square_height/2);
-                right.lineTo(start_x + square_width,start_y + square_height);
-                right.lineTo(start_x + square_width,start_y);
-                if(state_action[col][row].right >= 0){
-                    p.setOpacity(state_action[col][row].right);
-                    p.fillPath(right,path_good_color);
-                }
-                else{
-                    p.setOpacity(-state_action[col][row].right);
-                    p.fillPath(right,path_bad_color);
-                }
-
-
-                p.drawPath(right);
-                p.setOpacity(1.0);
-                p.setPen(text_pen);
-                QString right_value = QString::number(state_action[col][row].right);
-                p.drawText(start_x+square_width - 30,start_y+square_height/2,right_value);
-
-
-                p.setPen(wall_pen);
-                QPainterPath down;
-                down.moveTo(start_x+square_width/2,start_y+square_height/2);
-                down.lineTo(start_x+square_width,start_y+square_height);
-                down.lineTo(start_x,start_y + square_height);
-                down.lineTo(start_x+square_width/2,start_y+square_height/2);
-                if(state_action[col][row].down >= 0){
-                    p.setOpacity(state_action[col][row].down);
-                    p.fillPath(down,path_good_color);
-                }
-                else{
-                    p.setOpacity(-state_action[col][row].down);
-                    p.fillPath(down,path_bad_color);
-                }
-
-                p.drawPath(down);
-                p.setOpacity(1.0);
-                p.setPen(text_pen);
-                QString down_value = QString::number(state_action[col][row].down);
-                p.drawText(start_x+(square_width/2) - 10,start_y+square_height-10,down_value);
-
-            }
-
-            p.setPen(wall_pen);
-            p.drawRect(square);
-
 
         }
     }
@@ -443,7 +546,7 @@ double MainWindow::get_cur_state_reward(){
         return +3.0;
     }
     if(m_map[agent_row][agent_col] == "P1"){
-        return -1.0;        
+        return -1.0;
     }
     if(m_map[agent_row][agent_col] == "P2"){
         return -2.0;
@@ -537,6 +640,13 @@ void MainWindow::get_ui_data(){
         obey_per = 100.0 - (2 * noise_per);
     }
 
+    if(ui->view_b->currentText() == "VALUE_VIEW"){
+        cur_view = value;
+    }
+    if(ui->view_b->currentText() == "POLICY_VIEW"){
+        cur_view = policy;
+    }
+
 
 
 }
@@ -547,3 +657,39 @@ void MainWindow::on_slip_b_clicked()
 {
     isStochastic = !isStochastic;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

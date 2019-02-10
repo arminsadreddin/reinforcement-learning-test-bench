@@ -114,8 +114,8 @@
    <widget class="QRadioButton" name="slip_b">
     <property name="geometry">
      <rect>
-      <x>200</x>
-      <y>500</y>
+      <x>190</x>
+      <y>560</y>
       <width>112</width>
       <height>23</height>
      </rect>
@@ -127,8 +127,8 @@
    <widget class="QSpinBox" name="slip_per">
     <property name="geometry">
      <rect>
-      <x>200</x>
-      <y>530</y>
+      <x>190</x>
+      <y>590</y>
       <width>48</width>
       <height>26</height>
      </rect>
@@ -137,8 +137,8 @@
    <widget class="QLabel" name="slip_per_l">
     <property name="geometry">
      <rect>
-      <x>250</x>
-      <y>530</y>
+      <x>240</x>
+      <y>590</y>
       <width>67</width>
       <height>21</height>
      </rect>
@@ -440,6 +440,26 @@
       <height>21</height>
      </rect>
     </property>
+   </widget>
+   <widget class="QComboBox" name="view_b">
+    <property name="geometry">
+     <rect>
+      <x>190</x>
+      <y>500</y>
+      <width>86</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>VALUE_VIEW</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>POLICY_VIEW</string>
+     </property>
+    </item>
    </widget>
   </widget>
  </widget>
