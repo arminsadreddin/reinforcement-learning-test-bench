@@ -150,7 +150,7 @@
    <widget class="QLabel" name="alpha_l">
     <property name="geometry">
      <rect>
-      <x>340</x>
+      <x>290</x>
       <y>500</y>
       <width>67</width>
       <height>17</height>
@@ -163,7 +163,7 @@
    <widget class="QLabel" name="gamma_l">
     <property name="geometry">
      <rect>
-      <x>340</x>
+      <x>290</x>
       <y>530</y>
       <width>67</width>
       <height>17</height>
@@ -320,7 +320,7 @@
    <widget class="QLabel" name="step_l">
     <property name="geometry">
      <rect>
-      <x>316</x>
+      <x>270</x>
       <y>560</y>
       <width>81</width>
       <height>20</height>
@@ -385,7 +385,7 @@
    <widget class="QLineEdit" name="alpha_le">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>360</x>
       <y>500</y>
       <width>71</width>
       <height>20</height>
@@ -398,7 +398,7 @@
    <widget class="QLineEdit" name="gamma_le">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>360</x>
       <y>530</y>
       <width>71</width>
       <height>21</height>
@@ -411,7 +411,7 @@
    <widget class="QLineEdit" name="step_le">
     <property name="geometry">
      <rect>
-      <x>410</x>
+      <x>360</x>
       <y>560</y>
       <width>71</width>
       <height>21</height>
@@ -458,6 +458,26 @@
     <item>
      <property name="text">
       <string>POLICY_VIEW</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QComboBox" name="value_method">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>500</y>
+      <width>86</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>SIMPLE</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>TD</string>
      </property>
     </item>
    </widget>

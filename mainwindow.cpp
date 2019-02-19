@@ -18,6 +18,14 @@ enum mode{
     start,
     stop
 };
+enum value_update_method{
+    simple,
+    TD
+};
+
+value_update_method m_value_update_method = simple;
+
+
 enum view{
     value,
     policy
@@ -362,7 +370,9 @@ void MainWindow::agent_move(){
         rand_move();
     }
     double reward = get_cur_state_reward();
-
+    double state_reward = 0.0;
+    int last_step_col;
+    int last_step_row;
     if((agent_col > 3 || agent_col < 0 || agent_row > 2 || agent_row < 0) || m_map[agent_row][agent_col] == "W"){
 
         if(my_move == "UP"){
@@ -380,41 +390,82 @@ void MainWindow::agent_move(){
         cout << "col : "<<agent_col<<endl;
         cout<< "row :"<<agent_row<<endl;
 
-        reward+= m_gamma * get_state_best_value();
+        state_reward= m_gamma * get_state_best_value();
 
 
 
-        reward+=step_value;
 
-        if(my_move == "UP"){
-            state_action[agent_row][agent_col].up = reward;//max(reward,state_action[agent_row+1][agent_col].up);
-        }
-        if(my_move == "RIGHT"){
-            state_action[agent_row][agent_col].right = reward;//max(reward,state_action[agent_row+1][agent_col].right);
-        }
-        if(my_move == "DOWN"){
-            state_action[agent_row][agent_col].down=reward;//max(reward,state_action[agent_row+1][agent_col].down);
-        }
-        if(my_move == "LEFT"){
-            state_action[agent_row][agent_col].left=reward;//max(reward,state_action[agent_row+1][agent_col].left);
-        }
+        last_step_col = agent_col;
+        last_step_row = agent_row;
     }
     else{
-        reward+= m_gamma * get_state_best_value();
-        reward+=step_value;
+        state_reward = m_gamma * get_state_best_value();
+
         if(my_move == "UP"){
-            state_action[agent_row+1][agent_col].up = reward;//max(reward,state_action[agent_row+1][agent_col].up);
+            last_step_col = agent_col;
+            last_step_row = agent_row+1;
         }
         if(my_move == "RIGHT"){
-            state_action[agent_row][agent_col-1].right = reward;//max(reward,state_action[agent_row+1][agent_col].right);
+            last_step_col = agent_col-1;
+            last_step_row = agent_row;
         }
         if(my_move == "DOWN"){
-            state_action[agent_row-1][agent_col].down=reward;//max(reward,state_action[agent_row+1][agent_col].down);
+            last_step_col = agent_col;
+            last_step_row = agent_row-1;
         }
         if(my_move == "LEFT"){
-            state_action[agent_row][agent_col+1].left=reward;//max(reward,state_action[agent_row+1][agent_col].left);
+            last_step_col = agent_col+1;
+            last_step_row = agent_row;
         }
     }
+
+    double state_last_value;
+    if(my_move == "UP"){
+        state_last_value = state_action[last_step_row][last_step_col].up;
+    }
+    if(my_move == "RIGHT"){
+        state_last_value = state_action[last_step_row][last_step_col].right;
+    }
+    if(my_move == "DOWN"){
+        state_last_value = state_action[last_step_row][last_step_col].down;
+    }
+    if(my_move == "LEFT"){
+        state_last_value = state_action[last_step_row][last_step_col].left;
+    }
+
+    double new_reward = calc_reward(reward , state_reward , step_value , state_last_value);
+    //double new_reward = +11.0;
+
+    if(my_move == "UP"){
+        state_action[last_step_row][last_step_col].up = new_reward;
+    }
+    if(my_move == "RIGHT"){
+        state_action[last_step_row][last_step_col].right = new_reward;
+    }
+    if(my_move == "DOWN"){
+        state_action[last_step_row][last_step_col].down = new_reward;
+    }
+    if(my_move == "LEFT"){
+        state_action[last_step_row][last_step_col].left = new_reward;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     if(agent_col < 0 || agent_col > 3){
         agent_col = 0;
@@ -647,6 +698,12 @@ void MainWindow::get_ui_data(){
         cur_view = policy;
     }
 
+    if(ui->value_method->currentText() == "SIMPLE"){
+        m_value_update_method = simple;
+    }
+    if(ui->value_method->currentText() == "TD"){
+        m_value_update_method = TD;
+    }
 
 
 }
@@ -662,7 +719,20 @@ void MainWindow::on_slip_b_clicked()
 
 
 
+double MainWindow::calc_reward(double immidiet_reward , double state_reward , double step_reward , double state_last_value){
 
+    //simple
+    if(m_value_update_method == simple){
+        return immidiet_reward + state_reward + step_reward;
+    }
+
+    //TD
+    if(m_value_update_method == TD){
+        double rate = 0.5;
+        return (1.0 - rate) * state_last_value + rate * (immidiet_reward + state_reward + step_reward);
+    }
+
+}
 
 
 
